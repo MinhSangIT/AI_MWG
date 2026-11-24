@@ -1,0 +1,27 @@
+[
+    {
+        "ten": "Laptop Dell Inspiron",
+        "gia": 15000000,
+        "con_hang": true
+    },
+    {
+        "ten": "MacBook Air M3",
+        "gia": 25000000,
+        "con_hang": true
+    },
+    {
+        "ten": "Laptop ASUS Vivobook",
+        "gia": 18000000,
+        "con_hang": true
+    },
+    {
+        "ten": "Laptop HP Pavilion",
+        "gia": 17000000,
+        "con_hang": false
+    },
+    {
+        "ten": "Laptop Lenovo IdeaPad",
+        "gia": 12000000,
+        "con_hang": true
+    }
+]
