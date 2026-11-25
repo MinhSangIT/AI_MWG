@@ -1,0 +1,379 @@
+chuong 2
+
+bai 1
+
+TIN_GIAO_HANG = """
+Mình muốn đặt hàng một chiếc bàn làm việc.
+Giao hàng đến 25 Nguyễn Huệ, phường Bến Nghé,
+Quận 1, TP.HCM.
+Người nhận là Nguyễn Văn An, số điện thoại 0901234567.
+"""
+
+PROMPT_SO_SAI = "Lấy địa chỉ giao hàng."
+
+from common import ask
+
+for i in range(3):
+    resp = ask(
+        [
+            {"role": "system", "content": PROMPT_SO_SAI},
+            {"role": "user", "content": TIN_GIAO_HANG},
+        ],
+        temperature=0,
+        max_completion_tokens=500,
+    )
+
+    print(f"Lần {i + 1}:")
+    print(resp.choices[0].message.content)
+
+PROMPT_DAY_DU = """
+Bạn là nhân viên xử lý đơn hàng của một cửa hàng thương mại điện tử.
+
+Nhiệm vụ:
+Trích xuất thông tin địa chỉ giao hàng từ tin nhắn khách hàng.
+
+Ngữ cảnh:
+Tin nhắn có thể chứa thông tin sản phẩm, địa chỉ,
+người nhận và số điện thoại.
+
+Định dạng đầu ra:
+Chỉ trả về JSON hợp lệ với cấu trúc:
+{
+    "dia_chi_giao_hang": "string hoặc null"
+}
+
+Ràng buộc:
+- Chỉ lấy địa chỉ được khách hàng cung cấp.
+- Không tự suy đoán hoặc bổ sung thông tin.
+- Nếu không có địa chỉ giao hàng, trả về null.
+- Không giải thích, không thêm chữ ngoài JSON.
+"""
+
+TL:
+PROMPT_SO_SAI = "Lấy địa chỉ giao hàng."
+25 Nguyễn Huệ, phường Bến Nghé, Quận 1, TP.HCM
+Địa chỉ giao hàng: 25 Nguyễn Huệ, phường Bến Nghé, Quận 1, TP.HCM
+25 Nguyễn Huệ, TP.HCM
+
+PROMPT_DAY_DU = """
+Bạn là nhân viên xử lý đơn hàng của một cửa hàng thương mại điện tử.
+
+Nhiệm vụ:
+Trích xuất thông tin địa chỉ giao hàng từ tin nhắn khách hàng.
+
+Ngữ cảnh:
+Tin nhắn có thể chứa thông tin sản phẩm, địa chỉ,
+người nhận và số điện thoại.
+
+Định dạng đầu ra:
+Chỉ trả về JSON hợp lệ với cấu trúc:
+{
+    "dia_chi_giao_hang": "string hoặc null"
+}
+
+Ràng buộc:
+- Chỉ lấy địa chỉ được khách hàng cung cấp.
+- Không tự suy đoán hoặc bổ sung thông tin.
+- Nếu không có địa chỉ giao hàng, trả về null.
+- Không giải thích, không thêm chữ ngoài JSON.
+"""
+Lần 1:
+{
+    "dia_chi_giao_hang": "25 Nguyễn Huệ, phường Bến Nghé, Quận 1, TP.HCM"
+}
+Lần 2:
+{
+    "dia_chi_giao_hang": "25 Nguyễn Huệ, phường Bến Nghé, Quận 1, TP.HCM"
+}
+Lần 3:
+{
+    "dia_chi_giao_hang": "25 Nguyễn Huệ, phường Bến Nghé, Quận 1, TP.HCM"
+}
+
+bai 2
+a)
+Tin 3: Máy giặt giao trễ 3 ngày mà không ai báo, mình rất bực.
+Nhãn: khieu_nai
+
+thêm 1 ví dụ few-shot để sửa
+vi_du_moi = vi_du + [
+    (
+        "Đơn hàng của tôi giao trễ nhiều ngày, không ai thông báo. Tôi rất không hài lòng.",
+        "khac"
+    )
+]
+Tin 3: Máy giặt giao trễ 3 ngày mà không ai báo, mình rất bực.
+Nhãn: khac
+
+b)
+===== TEMPERATURE 0.2 =====
+
+Lần 1
+Slogan: Công nghệ tin cậy, giá trị trọn vẹn.
+Usage: CompletionUsage(completion_tokens=170, prompt_tokens=138, total_tokens=308, completion_time=0.355034112, completion_tokens_details=CompletionTokensDetails(reasoning_tokens=147), prompt_time=0.006237473, prompt_tokens_details=None, queue_time=0.006421801, total_time=0.361271585)
+
+Lần 2
+Slogan: Công nghệ tin cậy, giá trị trọn vẹn.
+Usage: CompletionUsage(completion_tokens=194, prompt_tokens=138, total_tokens=332, completion_time=0.405265774, completion_tokens_details=CompletionTokensDetails(reasoning_tokens=171), prompt_time=0.02666197, prompt_tokens_details=None, queue_time=0.266465298, total_time=0.431927744)
+
+Lần 3
+Slogan: Công nghệ tin cậy, giá trị trọn vẹn.
+Usage: CompletionUsage(completion_tokens=166, prompt_tokens=138, total_tokens=304, completion_time=0.346542607, completion_tokens_details=CompletionTokensDetails(reasoning_tokens=143), prompt_time=0.006214714, prompt_tokens_details=None, queue_time=0.264154356, total_time=0.352757321)
+
+===== TEMPERATURE 0.9 =====
+
+Lần 1
+Slogan: Công nghệ đỉnh cao, uy tín trọn vẹn.
+Usage: CompletionUsage(completion_tokens=105, prompt_tokens=138, total_tokens=243, completion_time=0.216739533, completion_tokens_details=CompletionTokensDetails(reasoning_tokens=82), prompt_time=0.005162549, prompt_tokens_details=None, queue_time=0.006731937, total_time=0.221902082)
+
+Lần 2
+Slogan: Công nghệ đỉnh cao, uy tín trọn vẹn.
+Usage: CompletionUsage(completion_tokens=124, prompt_tokens=138, total_tokens=262, completion_time=0.258177346, completion_tokens_details=CompletionTokensDetails(reasoning_tokens=101), prompt_time=0.006200438, prompt_tokens_details=None, queue_time=0.301419869, total_time=0.264377784)
+
+Lần 3
+Slogan: Công nghệ tin cậy, giá trị trọn vẹn.
+Usage: CompletionUsage(completion_tokens=112, prompt_tokens=138, total_tokens=250, completion_time=0.233223632, completion_tokens_details=CompletionTokensDetails(reasoning_tokens=89), prompt_time=0.007341092, prompt_tokens_details=None, queue_time=0.263898669, total_time=0.240564724)
+
+nhận xét
+Temperature thấp nhất quán, ổn định kq thường giống nhau. token va time cao 
+Temperature cao không nhất quán, ổn định kq thường khác nhau. token va time thấp
+
+bai 3:
+import json
+from typing import Optional, Literal
+
+from pydantic import BaseModel, ValidationError
+from groq import BadRequestError
+
+from common import ask
+
+
+class YeuCauKhach(BaseModel):
+    loai_san_pham: str
+    ngan_sach_vnd: Optional[int] = None
+    nhu_cau: str
+    muc_do_gap: Literal["thap", "trung_binh", "cao"]
+
+SYSTEM_TRICH_XUAT = """
+Bạn là hệ thống trích xuất thông tin mua hàng của khách hàng.
+
+Nhiệm vụ:
+Trích xuất 4 thông tin:
+- loai_san_pham
+- ngan_sach_vnd
+- nhu_cau
+- muc_do_gap
+
+Quy tắc:
+1. Nếu không có thông tin ngân sách thì trả về null.
+2. Chuyển ngân sách sang đơn vị VND.
+   Ví dụ: 15 triệu = 15000000.
+3. Nếu khách không nói rõ nhu cầu thì mô tả ngắn gọn
+   dựa trên nội dung tin nhắn.
+4. Mức độ gấp:
+   - thap: Không có yêu cầu gấp.
+   - trung_binh: Có nhu cầu mua nhưng không quá gấp.
+   - cao: Khách cần gấp hoặc có thời hạn cụ thể.
+5. Nếu tin nhắn không có lấy dc dữ liệu
+   - loai_san_pham là chuỗi rỗng.
+   - ngan_sach_vnd là null.
+   - nhu_cau là chuỗi rỗng.
+   - muc_do_gap là thap.
+6. loai_san_pham chỉ gồm thiết bị điện tử. còn lại trả khác. null nếu k không nói về sp
+"""
+
+def trich_xuat(tin, so_lan_thu=3):
+
+    for lan in range(so_lan_thu):
+
+        try:
+            resp = ask(
+                [
+                    {
+                        "role": "system",
+                        "content": SYSTEM_TRICH_XUAT
+                    },
+                    {
+                        "role": "user",
+                        "content": tin
+                    }
+                ],
+
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "yeu_cau_khach",
+                        "schema": YeuCauKhach.model_json_schema()
+                    }
+                },
+
+                max_completion_tokens=1500
+            )
+
+            content = resp.choices[0].message.content
+
+            data = json.loads(content)
+
+            return YeuCauKhach.model_validate(data)
+
+        except (
+            ValidationError,
+            json.JSONDecodeError,
+            BadRequestError
+        ) as loi:
+
+            print(f"Lần {lan + 1} thất bại:", loi)
+
+    return None
+
+print("===== KẾT QUẢ STRUCTURED OUTPUT =====")
+
+ket_qua = []
+
+for i, tin in enumerate(TIN_MAU, 1):
+
+    result = trich_xuat(tin)
+
+    if result:
+        ket_qua.append({
+            "STT": i,
+            "Tin nhắn": tin,
+            "Sản phẩm": result.loai_san_pham,
+            "Ngân sách": result.ngan_sach_vnd,
+            "Nhu cầu": result.nhu_cau,
+            "Mức độ gấp": result.muc_do_gap
+        })
+
+    else:
+        ket_qua.append({
+            "STT": i,
+            "Tin nhắn": tin,
+            "Sản phẩm": "Lỗi",
+            "Ngân sách": None,
+            "Nhu cầu": "Không trích xuất được",
+            "Mức độ gấp": "Không xác định"
+        })
+
+
+# In bảng kết quả
+print("\n===== BẢNG KẾT QUẢ =====")
+
+for row in ket_qua:
+    print("-" * 100)
+
+    for key, value in row.items():
+        print(f"{key}: {value}")
+
+===== KẾT QUẢ STRUCTURED OUTPUT =====
+
+===== BẢNG KẾT QUẢ =====
+----------------------------------------------------------------------------------------------------
+STT: 1
+Tin nhắn: Mình cần mua tivi 55 inch cho phòng khách, khoảng 15 triệu, cần gấp trong tuần này.
+Sản phẩm: tivi
+Ngân sách: 15000000
+Nhu cầu: Mua tivi 55 inch cho phòng khách
+Mức độ gấp: cao
+----------------------------------------------------------------------------------------------------
+STT: 2
+Tin nhắn: Tủ lạnh nhà mình đang bị chảy nước, còn bảo hành không shop?
+Sản phẩm: tủ lạnh
+Ngân sách: None
+Nhu cầu: Khách hàng muốn biết bảo hành và cách xử lý tủ lạnh bị rò rỉ nước
+Mức độ gấp: thap
+----------------------------------------------------------------------------------------------------
+STT: 3
+Tin nhắn: Máy giặt giao trễ 3 ngày mà không ai báo, mình rất bực.
+Sản phẩm: máy giặt
+Ngân sách: None
+Nhu cầu: khiếu nại giao hàng trễ 3 ngày và yêu cầu cải thiện dịch vụ
+Mức độ gấp: trung_binh
+----------------------------------------------------------------------------------------------------
+STT: 4
+Tin nhắn: Hôm nay trời đẹp quá nhỉ!
+Sản phẩm: 
+Ngân sách: None
+Nhu cầu: 
+Mức độ gấp: thap
+----------------------------------------------------------------------------------------------------
+STT: 5
+Tin nhắn: Cho mình hỏi laptop cho dân thiết kế đồ họa, ngân sách thoải mái.
+Sản phẩm: laptop
+Ngân sách: None
+Nhu cầu: Laptop cho dân thiết kế đồ họa
+Mức độ gấp: thap
+----------------------------------------------------------------------------------------------------
+STT: 6
+Tin nhắn: minh muốn mua bánh xe
+Sản phẩm: khác
+Ngân sách: None
+Nhu cầu: Mua bánh xe
+Mức độ gấp: thap
+
+Structured output: giúp định nghĩa dữ liệu mong muốn (json, text), kiểu dữ liệu (text, null, yes...)
+
+1c 2b 3d 4b 5a 6c 7a 8d
+
+bai 9: strict chỉ bảo đảm đúng cấu trúc. vẫn có thể bịa đáp án không đúng định dạng mong muốn
+kết hopwf thêm Pydantic
+
+bai 10: Viết prompt đủ 5 thành phần: vai trò, chỉ dẫn, ngữ cảnh, đầu vào, đầu ra mong muốn.
+
+Vai trò: Bạn là bot phân loại tin nhắn khách hàng của hàng điện máy
+chỉ dẫn: Xác định tin nhắn thuộc một trong ba nhãn: tu_van, bao_hanh, khac.
+Ngữ cảnh: thân thiện, tư vấn viên, khách giống người thân trong nhá
+đầu ra: Chỉ trả về một nhãn, không giải thích. Nếu tin nhắn không thuộc tư vấn hoặc bảo hành, hãy trả về khac.
+đầu vào: tôi muốn mua điện thoại xịn
+
+bổ sung dáp án
+
+bai 1
+nhận xét
+Prompt sơ sài có thể trả kq k nhất quán.
+Prompt đầy đủ kq nhất quán, thường giống nhau.
+
+bai 2
+a)
+few-shot không trùng với tin kiểm tra = 
+[
+    (
+        "Đơn hàng của tôi giao trễ nhiều ngày, không ai thông báo. Tôi rất không hài lòng.",
+        "khac"
+    )
+]
+
+| STT | Tin nhắn | Trước | Sau |
+|---|---|---|---|
+| 1 | Mua tivi | tu_van | tu_van |
+| 2 | Tủ lạnh chảy nước | bao_hanh | bao_hanh |
+| 3 | Giao hàng trễ, khách bực | khieu_nai | khieu_nai |
+| 4 | Thời tiết đẹp | khac | khac |
+| 5 | Mua laptop đồ họa | tu_van | tu_van |
+
+nhận xét: những tin phức tạp có thể thuộc nhiều nhãn. AI đang phân loại k đúng ý minh. thêm vd để tranning lại là ok
+
+Tin 7: Tủ lạnh mình mới mua bị ồn, shop tư vấn giúp mình nên đổi hay sửa?
+Nhãn: tu_van
+
+bài 3:
+tin số 4 mô hình trả
+Tin nhắn: Hôm nay trời đẹp quá nhỉ!
+Sản phẩm: 
+Ngân sách: None
+Nhu cầu: 
+Mức độ gấp: thap
+
+=> đã define out nên kq khá chuẩn
+
+tin số 5 thiếu ngân sách trả
+STT: 5
+Tin nhắn: Cho mình hỏi laptop cho dân thiết kế đồ họa, ngân sách thoải mái.
+Sản phẩm: laptop
+Ngân sách: None
+Nhu cầu: Laptop cho dân thiết kế đồ họa
+Mức độ gấp: thap
+
+=> Ngân sách: None
+
+nhận xét: Structured output: giúp định nghĩa dữ liệu mong muốn (json, text), kiểu dữ liệu (text, null, yes...)
+
