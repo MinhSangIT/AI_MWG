@@ -1,4 +1,4 @@
-from common import ask
+from chuong_3.common import ask
 
 # region
 
@@ -231,7 +231,7 @@ TIN_MAU = [
 # endregion
 
 # region bai 2
-from common import ask
+from chuong_3.common import ask
 
 SYSTEM = """
 Phân loại tin nhắn của khách vào đúng một nhãn:

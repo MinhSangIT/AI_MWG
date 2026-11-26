@@ -377,3 +377,6 @@ Mức độ gấp: thap
 
 nhận xét: Structured output: giúp định nghĩa dữ liệu mong muốn (json, text), kiểu dữ liệu (text, null, yes...)
 
+******************
+
+Chương 3: Tool calling, cho LLM dùng công cụ
