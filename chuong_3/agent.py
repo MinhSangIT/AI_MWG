@@ -15,7 +15,7 @@ def chay_tool(tool_call):
         if ten not in HAM:
             raise ValueError(f"Không có công cụ: {ten}")
         tham_so = json.loads(tool_call.function.arguments)
-        ket_qua = HAM[ten](**tham_so)
+        ket_qua = HAM[ten](**tham_so)  # run func
     except Exception as loi:
         ket_qua = json.dumps({"loi": str(loi)}, ensure_ascii=False)
     return {
@@ -32,6 +32,8 @@ def tro_ly(cau_hoi, toi_da=6):
         {"role": "user", "content": cau_hoi},
     ]
     for buoc in range(toi_da):
+        print(buoc)
+
         resp = ask(
             messages,
             tools=TOOLS,
@@ -40,6 +42,10 @@ def tro_ly(cau_hoi, toi_da=6):
             max_completion_tokens=1500,
         )
         tin = resp.choices[0].message
+        # print(messages)
+        # print(tin)
+        print(tin.tool_calls)
+
         if not tin.tool_calls:
             return tin.content  # không cần công cụ nữa: đây là câu trả lời cuối
         messages.append(tin)  # giữ lại yêu cầu gọi công cụ của mô hình
