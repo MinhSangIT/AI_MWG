@@ -42,7 +42,8 @@ def tro_ly(cau_hoi, toi_da=6):
             max_completion_tokens=1500,
         )
         tin = resp.choices[0].message
-        # print(messages)
+        if buoc == 2:
+            print(messages)
         # print(tin)
         print(tin.tool_calls)
 
@@ -58,4 +59,14 @@ def tro_ly(cau_hoi, toi_da=6):
 
 
 if __name__ == "__main__":
-    print(tro_ly("Tivi 55 inch còn hàng không và giá bao nhiêu?"))
+    print(tro_ly("Mua 2 tivi 55 inch và 1 máy giặt 9kg thì tổng bao nhiêu tiền?"))
+
+    # cau_hoi = [
+    #     'Hôm nay là thứ mấy?'
+    # ]
+
+    # for i, cau in enumerate(cau_hoi, start=1):
+    #     print(f'\n========== CÂU {i} ==========')
+    #     print('Người dùng:', cau)
+    #     ket_qua = tro_ly(cau)
+    #     print('Trợ lý:', ket_qua)

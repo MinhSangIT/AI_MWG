@@ -49,18 +49,62 @@ def tra_don_hang(ma_don):
     )
 
 
-def lay_ngay_hien_tai():
+# def lay_ngay_hien_tai():
     bay_gio = datetime.now()
     return json.dumps(
         {"ngay": bay_gio.strftime("%Y-%m-%d"), "thu": THU[bay_gio.weekday()]},
         ensure_ascii=False,
     )
 
+def lay_ngay_hien_tai(**kwargs):
+    bay_gio = datetime.now()
+    return json.dumps(
+        {"ngay": bay_gio.strftime("%Y-%m-%d"), "thu": THU[bay_gio.weekday()]},
+        ensure_ascii=False,
+    )
+
+def tinh_an_toan(items):
+    ket_qua = []
+    tong_tien = 0
+
+    for item in items:
+        ten_san_pham = item["ten_san_pham"].strip().lower()
+        so_luong = item["so_luong"]
+
+        if ten_san_pham not in TON_KHO:
+            return json.dumps(
+                {"loi": f"Không tìm thấy sản phẩm: {ten_san_pham}"},
+                ensure_ascii=False,
+            )
+
+        san_pham = TON_KHO[ten_san_pham]
+        don_gia = san_pham["gia_vnd"]
+
+        thanh_tien = don_gia * so_luong
+        tong_tien += thanh_tien
+
+        ket_qua.append(
+            {
+                "ten_san_pham": ten_san_pham,
+                "so_luong": so_luong,
+                "don_gia": don_gia,
+                "thanh_tien": thanh_tien,
+            }
+        )
+
+    return json.dumps(
+        {
+            "chi_tiet": ket_qua,
+            "tong_tien": tong_tien,
+        },
+        ensure_ascii=False,
+    )
 
 HAM = {
     "tra_ton_kho": tra_ton_kho,
     "tra_don_hang": tra_don_hang,
     "lay_ngay_hien_tai": lay_ngay_hien_tai,
+    "tinh_an_toan": tinh_an_toan
 }
 
 TOOLS = [
@@ -113,6 +157,53 @@ TOOLS = [
                 "Dùng khi cần biết hôm nay là ngày nào, thứ mấy."
             ),
             "parameters": {"type": "object", "properties": {}},
+        },
+    },
+    # {
+    #     "type": "function",
+    #     "function": {
+    #         "name": "tinh_an_toan",
+    #         "description": (
+    #             "tính số tiền cần thanh toán khi khách hỏi nhiều sản phẩm, liệt kê tổng từng loại rồi tính tổng pgair thanh toán"
+    #         ),
+    #         "parameters": {"type": "object", "properties": {}},
+    #     },
+    # },
+    {
+        "type": "function",
+        "function": {
+            "name": "tinh_an_toan",
+            "description": (
+                "lấy số lượng và tên sản phẩm"
+                "Dùng khi mua nhiều sản phẩm khách hỏi tổng bao nhiêu tiền?.(liệt kê tổng từng sản phẩm trước khi trả thành tiền)"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "description": "Danh sách sản phẩm khách muốn mua",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "ten_san_pham": {
+                                    "type": "string",
+                                    "description": "Tên sản phẩm",
+                                },
+                                "so_luong": {
+                                    "type": "integer",
+                                    "description": "Số lượng sản phẩm",
+                                },
+                            },
+                            "required": [
+                                "ten_san_pham",
+                                "so_luong",
+                            ],
+                        },
+                    },
+                },
+                "required": ["items"],
+            },
         },
     },
 ]

@@ -380,3 +380,120 @@ nhận xét: Structured output: giúp định nghĩa dữ liệu mong muốn (js
 ******************
 
 Chương 3: Tool calling, cho LLM dùng công cụ
+
+Trắc nghiệm: 1-C, 2-A, 3-D, 4-B, 5-C, 6-A, 7-D, 8-B.
+
+bai 1
+Các dòng log công cụ được gọi.
+[bước 1] gọi tra_ton_kho({"ten_san_pham":"tivi 55 inch"})
+[bước 1] gọi tra_don_hang({"ma_don":"DH001"})
+[bước 1] gọi lay_ngay_hien_tai({"":{}})
+[bước 2] gọi lay_ngay_hien_tai({})
+
+Mô hình có gọi công cụ không: có
+
+Gọi công cụ mấy lần: gọi 1 lần. chỉ Hôm nay là thứ mấy? goi 2 lần 
+"lay_ngay_hien_tai() got an unexpected keyword argument
+
+Câu trả lời cuối.
+ Tivi 55 inch còn 12 chiếc, giá 14.990.000 VND.
+  Đơn DH001 hiện đang **đang giao** và dự kiến sẽ tới tay bạn vào ngày **28/11/2026**.
+  Hôm nay là Thứ Năm, ngày 26/11/2026.
+  
+Câu trả lời có khớp dữ liệu trong tools_dien_may.py không: có
+
+bai 1
+a)
+gpt-oss-120b: trả lời đúng hôm nay là thứ mấy. m test 5 lần gọi đều đúng
+gpt-oss-20b: trả lời hên sui hôm nay là thứ mấy. khi đúng khi sai 
+nhận xét: mình dùng llm gpt-oss-120b chuẩn k cần dùng tool lấy now gửi cho llm. chỉ llm 20b quá nhỏ nên sai
+
+b)
+def lay_ngay_hien_tai(**kwargs):
+
+bai 2
+schema 
+{
+        "type": "function",
+        "function": {
+            "name": "tinh_an_toan",
+            "description": (
+                "lấy số lượng và tên sản phẩm"
+                "Dùng khi mua nhiều sản phẩm khách hỏi tổng bao nhiêu tiền?.(liệt kê tổng từng sản phẩm trước khi trả thành tiền)"
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "description": "Danh sách sản phẩm khách muốn mua",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "ten_san_pham": {
+                                    "type": "string",
+                                    "description": "Tên sản phẩm",
+                                },
+                                "so_luong": {
+                                    "type": "integer",
+                                    "description": "Số lượng sản phẩm",
+                                },
+                            },
+                            "required": [
+                                "ten_san_pham",
+                                "so_luong",
+                            ],
+                        },
+                    },
+                },
+                "required": ["items"],
+            },
+        },
+    },
+
+def tinh_an_toan(items):
+    ket_qua = []
+    tong_tien = 0
+
+    for item in items:
+        ten_san_pham = item["ten_san_pham"].strip().lower()
+        so_luong = item["so_luong"]
+
+        if ten_san_pham not in TON_KHO:
+            return json.dumps(
+                {"loi": f"Không tìm thấy sản phẩm: {ten_san_pham}"},
+                ensure_ascii=False,
+            )
+
+        san_pham = TON_KHO[ten_san_pham]
+        don_gia = san_pham["gia_vnd"]
+
+        thanh_tien = don_gia * so_luong
+        tong_tien += thanh_tien
+
+        ket_qua.append(
+            {
+                "ten_san_pham": ten_san_pham,
+                "so_luong": so_luong,
+                "don_gia": don_gia,
+                "thanh_tien": thanh_tien,
+            }
+        )
+
+    return json.dumps(
+        {
+            "chi_tiet": ket_qua,
+            "tong_tien": tong_tien,
+        },
+        ensure_ascii=False,
+    )
+log
+[bước 1] gọi tinh_an_toan({"items":[{"so_luong":2,"ten_san_pham":"tivi 55 inch"},{"so_luong":1,"ten_san_pham":"máy giặt 9kg"}]})
+
+kết quả
+- Tivi 55 inch: 2 × 14.990.000 ₫ = 29.980.000 ₫  
+- Máy giặt 9 kg: 1 × 7.290.000 ₫ = 7.290.000 ₫  
+**Tổng cộng: 37.270.000 ₫**.
+
+nhận xét:
+lúc đầu khai báo tool sai. không biêt tool là yêu cầu m muốn llm lấy từ request => parameters sai => k gọi dc hàm tinh_an_toan
