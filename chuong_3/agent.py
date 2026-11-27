@@ -59,14 +59,12 @@ def tro_ly(cau_hoi, toi_da=6):
 
 
 if __name__ == "__main__":
-    print(tro_ly("Mua 2 tivi 55 inch và 1 máy giặt 9kg thì tổng bao nhiêu tiền?"))
+    # print(tro_ly("Mua 2 tivi 55 inch samsung và 1 máy giặt 9kg thì tổng bao nhiêu tiền?"))
 
-    # cau_hoi = [
-    #     'Hôm nay là thứ mấy?'
-    # ]
+    cau_hoi = ["Mua 2 tivi 55 inch và 1 máy giặt 9kg thì tổng bao nhiêu tiền?"]
 
-    # for i, cau in enumerate(cau_hoi, start=1):
-    #     print(f'\n========== CÂU {i} ==========')
-    #     print('Người dùng:', cau)
-    #     ket_qua = tro_ly(cau)
-    #     print('Trợ lý:', ket_qua)
+    for i, cau in enumerate(cau_hoi, start=1):
+        print(f'\n========== CÂU {i} ==========')
+        print('Người dùng:', cau)
+        ket_qua = tro_ly(cau)
+        print('Trợ lý:', ket_qua)

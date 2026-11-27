@@ -402,14 +402,16 @@ Câu trả lời cuối.
   
 Câu trả lời có khớp dữ liệu trong tools_dien_may.py không: có
 
+bổ sung
 bai 1
 a)
 gpt-oss-120b: trả lời đúng hôm nay là thứ mấy. m test 5 lần gọi đều đúng
-gpt-oss-20b: trả lời hên sui hôm nay là thứ mấy. khi đúng khi sai 
-nhận xét: mình dùng llm gpt-oss-120b chuẩn k cần dùng tool lấy now gửi cho llm. chỉ llm 20b quá nhỏ nên sai
+gpt-oss-20b: trả lời hên xui hôm nay là thứ mấy. khi đúng khi sai (vì không láy dc realtime bịa là chính)
 
 b)
 def lay_ngay_hien_tai(**kwargs):
+
+nhận xét: mình dùng llm gpt-oss-120b chuẩn k cần dùng tool lấy now gửi cho llm. chỉ llm 20b quá nhỏ nên sai
 
 bai 2
 schema 
@@ -497,3 +499,104 @@ kết quả
 
 nhận xét:
 lúc đầu khai báo tool sai. không biêt tool là yêu cầu m muốn llm lấy từ request => parameters sai => k gọi dc hàm tinh_an_toan
+
+bai 3:
+a)
+ [bước 1] gọi tra_ton_kho({"ten_san_pham":"Điện thoại X"})
+Trợ lý: Xin lỗi, hiện không tìm thấy thông tin về sản phẩm “Điện thoại X”. Quý khách có thể cung cấp tên đầy đủ hoặc mô tả chi tiết hơn để tôi kiểm tra lại nhé.
+
+[bước 1] gọi tra_don_hang({"ma_don":"DH999"})
+Trợ lý: Xin lỗi, không tìm thấy đơn hàng **DH999**. Bạn có thể kiểm tra lại mã đơn hoặc cung cấp thêm thông tin để tôi hỗ trợ nhé.
+
+nhan xet: agent chạy đúng
+
+b)
+def tinh_an_toan(items):
+    ket_qua = []
+    tong_tien = 0
+
+    for item in items:
+        ten_san_pham = item["ten_san_pham"].strip().lower()
+        so_luong = item["so_luong"]
+
+        if ten_san_pham not in TON_KHO:
+            return json.dumps(
+                {"loi": f"Không tìm thấy sản phẩm: {ten_san_pham}"},
+                ensure_ascii=False,
+            )
+
+        san_pham = TON_KHO[ten_san_pham]
+        don_gia = san_pham["gia_vnd"]
+
+        thanh_tien = don_gia * so_luong
+        tong_tien += thanh_tien
+
+        ket_qua.append(
+            {
+                "ten_san_pham": ten_san_pham,
+                "so_luong": so_luong,
+                "don_gia": don_gia,
+                "thanh_tien": thanh_tien,
+            }
+        )
+
+    return json.dumps(
+        {
+            "chi_tiet": ket_qua,
+            "tong_tien": tong_tien,
+        },
+        ensure_ascii=False,
+    )
+
+Mua 2 tivi 55 inch và 1 máy giặt 9kg thì tổng bao nhiêu tiền?
+[ChatCompletionMessageToolCall(id='fc_17314870-29f9-4ba3-8b77-a8fe61222501', function=Function(arguments='{"items":[{"so_luong":2,"ten_san_pham":"tivi 55 inch"},{"so_luong":1,"ten_san_pham":"máy giặt 9kg"}]}', name='tinh_an_toan'), type='function')]
+  [bước 1] gọi tinh_an_toan({"items":[{"so_luong":2,"ten_san_pham":"tivi 55 inch"},{"so_luong":1,"ten_san_pham":"máy giặt 9kg"}]})
+Trợ lý: - Tivi 55 inch: 2 x 14.990.000 ₫ = 29.980.000 ₫  
+- Máy giặt 9 kg: 1 x 7.290.000 ₫ = 7.290.000 ₫  
+
+**Tổng cộng: 37.270.000 ₫**.
+nhan xet: agent chạy đúng
+
+c)
+vì hàm của m chỉ cần 2 bước cho kq nếu toi_da = 1 thì Xin lỗi, mình chưa xử lý xong yêu cầu này.
+
+theo m hiểu thì eval giống như lệnh thực thi excute. nên k dc dùng vs llm or request vì nó cố gắng thực thi yêu cầu xui chạy lệnh delete là xong
+
+chay_tool dừng thì không response cho ng dùng dc. trả lỗi cho llm để tự sửa (thêm 1 lần gọi llm) nó respone người dùng tự nhiên hơn
+
+câu 9: nên dùng model gpt-oss-120b giải quyết mọi vấn đề vì nó lấy dc realtime
+
+câu 10: 
+với những bài toán liên quan tiền nên có bước verify cuối cùng của role là người k chạy tự động và phải có log từng bước. hạn chế số tiền. có thể nhiều cấp duyệt
+vd: khieu_nai xác nhận lý do hợp lý chuyển cho quản lý duyệt hoàn tiền chuyển cho thu ngân chuyener tiền cho khách
+
+{
+    "type": "function",
+    "function": {
+        "name": "tao_yeu_cau_hoan_tien",
+        "description": "Tạo yêu cầu hoàn tiền cho khách hàng. Đây là thao tác có ảnh hưởng đến tiền thật, chỉ sử dụng khi khách hàng đã xác nhận rõ ràng việc hoàn tiền.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "ma_don_hang": {
+                    "type": "string",
+                    "description": "Mã đơn hàng cần hoàn tiền, ví dụ DH001."
+                },
+                "so_tien": {
+                    "type": "number",
+                    "description": "Số tiền cần hoàn, tính bằng VND."
+                },
+                "ly_do": {
+                    "type": "string",
+                    "description": "Lý do khách hàng yêu cầu hoàn tiền."
+                }
+            },
+            "required": [
+                "ma_don_hang",
+                "so_tien",
+                "ly_do"
+            ],
+            "additionalProperties": False
+        }
+    }
+}
